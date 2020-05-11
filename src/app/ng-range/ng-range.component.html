@@ -1,0 +1,29 @@
+<div class="container">
+  <button class="left-btn"
+          (click)="setFavoriteValue($event,options.min)">MIN {{options.min | shortNumber}}</button>
+  <div class="text-container">
+    <input type="text"
+           appNumberOnly
+           [ngModel]="value | inputFormat"
+           (ngModelChange)="inputChangeHandler($event)"
+           (blur)="inputConfirmHandler($event)"
+           (keydown.enter)="inputConfirmHandler($event)"
+    />
+    <div class="ticks-container">
+      <div *ngFor="let tick of options.ticks"
+           class="point"
+           [style.left]="getTickPercentPosition(tick)"
+           (click)="setFavoriteValue($event,tick)">
+        <label class="label">{{tick | shortNumber}}</label>
+      </div>
+    </div>
+    <div class="slide-container" #slideContainer>
+      <div appMove
+           (outputOnChange)="sliderChangeHandler($event)"
+           [left]="sliderLeftPosition"
+           class="slider"></div>
+    </div>
+  </div>
+  <button (click)="setFavoriteValue($event,options.max)"
+          class="right-btn">MAX {{options.max | shortNumber}}</button>
+</div>

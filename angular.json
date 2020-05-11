@@ -145,6 +145,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "ngRange"
+    }
+  },
+  "defaultProject": "ngRange",
+  "cli": {
+    "analytics": false
+  }
 }

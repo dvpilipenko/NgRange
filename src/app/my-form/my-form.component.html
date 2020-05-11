@@ -1,0 +1,16 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div>
+    <div class="form" >
+      <app-ng-range formControlName="value" [options]="options"></app-ng-range>
+    </div>
+    <div class="form">
+      <app-ng-range formControlName="value2" [options]="options2"></app-ng-range>
+    </div>
+  </div>
+  <div>
+    Values From control 1: {{form.value['value']}}
+  </div>
+  <div>
+    Values From control 2: {{form.value['value2']}}
+  </div>
+</form>
