@@ -10,11 +10,11 @@
            (keydown.enter)="inputConfirmHandler($event)"
     />
     <div class="ticks-container">
-      <div *ngFor="let tick of options.ticks"
+      <div *ngFor="let tick of ticks"
            class="point"
-           [style.left]="getTickPercentPosition(tick)"
-           (click)="setFavoriteValue($event,tick)">
-        <label class="label">{{tick | shortNumber}}</label>
+           [style.left]="tick.percent"
+           (click)="setFavoriteValue($event,tick.value)">
+        <label class="label">{{tick.value | shortNumber}}</label>
       </div>
     </div>
     <div class="slide-container" #slideContainer>

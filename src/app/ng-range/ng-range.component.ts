@@ -1,10 +1,16 @@
-import {AfterViewInit, Component, ElementRef, forwardRef, Input, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, forwardRef, Input, OnInit, ViewChild} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {CommonFunc} from './common-func';
 
 export type RangeOptions = {
   min: number
   max: number
   ticks: Array<number>
+};
+
+type Tick = {
+  percent: string,
+  value: number
 };
 
 const CUSTOM_VALUE_ACCESSOR: any = {
@@ -19,7 +25,7 @@ const CUSTOM_VALUE_ACCESSOR: any = {
   styleUrls: ['./ng-range.component.scss'],
   providers: [CUSTOM_VALUE_ACCESSOR]
 })
-export class NgRangeComponent implements AfterViewInit, ControlValueAccessor {
+export class NgRangeComponent implements OnInit, ControlValueAccessor {
   private onTouched: void;
   private disabled: boolean;
 
@@ -29,9 +35,20 @@ export class NgRangeComponent implements AfterViewInit, ControlValueAccessor {
   slideContainer: ElementRef;
 
   onChange: (val) => {};
+  ticks: Array<Tick>;
   sliderLeftPosition = 0;
   value: string;
+
   constructor() {
+  }
+
+  ngOnInit(): void {
+    this.ticks = this.options.ticks.map(value => {
+      return {
+        percent: this.getTickPercentPosition(value),
+        value
+      };
+    });
   }
 
   getTickPercentPosition(tick: number): string {
@@ -41,8 +58,7 @@ export class NgRangeComponent implements AfterViewInit, ControlValueAccessor {
 
   sliderChangeHandler(left: number) {
     this.sliderLeftPosition = left;
-    const percents = (left * 100) / this.slideContainer.nativeElement.offsetWidth;
-    const result = Math.round((((this.options.max - this.options.min) / 100) * percents) + this.options.min);
+    const result = Math.round((((this.options.max - this.options.min) / 100) * left) + this.options.min);
     this.value = result.toString();
     this.onChange(this.value);
   }
@@ -50,13 +66,13 @@ export class NgRangeComponent implements AfterViewInit, ControlValueAccessor {
   inputChangeHandler(val: string) {
     this.value = val;
     let percents = ((Number(this.value) - this.options.min) * 100) / (this.options.max - this.options.min);
-    percents = this.getBorderValue(0, 100, percents);
-    this.sliderLeftPosition = Math.round((this.slideContainer.nativeElement.offsetWidth / 100) * percents);
+    percents = CommonFunc.getBorderValue(0, 100, percents);
+    this.sliderLeftPosition = percents;
   }
 
   inputConfirmHandler(event) {
     event.preventDefault();
-    this.value = this.getBorderValue(this.options.min, this.options.max, Number(this.value)).toString();
+    this.value = CommonFunc.getBorderValue(this.options.min, this.options.max, Number(this.value)).toString();
     this.onChange(this.value);
   }
 
@@ -65,10 +81,6 @@ export class NgRangeComponent implements AfterViewInit, ControlValueAccessor {
     this.value = val.toString();
     this.inputChangeHandler(this.value);
     this.onChange(val);
-  }
-
-  getBorderValue(min: number, max: number, val: number) {
-    return val < min ? min : val > max ? max : val;
   }
 
   registerOnChange(fn: any): void {
@@ -85,9 +97,6 @@ export class NgRangeComponent implements AfterViewInit, ControlValueAccessor {
 
   writeValue(obj: any): void {
     this.value = obj;
-  }
-
-  ngAfterViewInit(): void {
-    setTimeout(() => this.inputChangeHandler(this.value));
+    this.inputChangeHandler(this.value);
   }
 }
